@@ -24,7 +24,7 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                sh 'docker run -d -p 8082:8080 spring-demo:latest'
+                sh 'docker run -d -p 8082:8080 jira-mapping:latest'
             }
         }
     }
