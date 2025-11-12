@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/jira")
 public class JiraWebhookController {
 
-    // This is sample commends for testing jenkins triggers whether it was working or not.
-
-
     private final JiraWebhookService jiraWebhookService;
 
     public JiraWebhookController(JiraWebhookService jiraWebhookService) {
