@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/salmannsharif/JiraPayloadMapping.git'
+                git branch: 'master', url: 'https://github.com/salmannsharif/JiraPayloadMapping.git'
             }
         }
 
@@ -22,10 +22,45 @@ pipeline {
             }
         }
 
+        stage('Stop and Remove Old Container') {
+            steps {
+                script {
+                    sh '''
+                        docker stop jira-mapping-container || true
+                        docker rm jira-mapping-container || true
+                    '''
+                }
+            }
+        }
+
         stage('Run Container') {
             steps {
-                sh 'docker run -d -p 8082:8080 jira-mapping:latest'
+                script {
+                    // Port mapping: host:container
+                    // Your app runs on 8081 inside container
+                    sh 'docker run -d --name jira-mapping-container -p 8082:8081 jira-mapping:latest'
+                }
             }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    sh 'docker ps | grep jira-mapping-container'
+                    echo 'Application deployed successfully!'
+                    echo 'Access the application at: http://localhost:8082'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+            echo 'Application is running at http://localhost:8082/jira/callback'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs for details.'
         }
     }
 }
